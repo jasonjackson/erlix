@@ -1,0 +1,22 @@
+#-*- org -*-
+#author : kdr2
+
+Changelog:
+
+* implemented erlang-data-type:
+ TYPE_ATOM
+ TYPE_INT
+ TYPE_UINT
+ TYPE_FLOAT
+ TYPE_PID
+ TYPE_REF
+ TYPE_TUPLE
+ TYPE_BINARY
+ TYPE_LIST
+
+* erlang-data-type to implement
+ TYPE_PORT
+
+* todo:
+ pushlish ruby-node
+

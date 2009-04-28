@@ -1,0 +1,248 @@
+#author kdr2
+
+0. Intsall erlix
+<code>
+unzip erlix-version.zip
+cd erlix-version
+ruby configure.rb
+make
+make install
+</code>
+ * Need erlang installed
+
+
+1. Play with the ErlixTerm
+ErlixTerm is a Module, represents the erlang-term,. It is mixed into some particular classes,
+like ErlixAtom,ErlixInt,ErlixList... Now we will play with these classes in irb:
+
+First,open irb,and require the erlix lib:
+
+<code>
+kdr2@kdr2-pc:~$ irb
+irb(main):001:0> require "erlix"
+=> true
+irb(main):002:0>
+</code>
+
+Find all ErlixTerm's subclasses:
+<code>
+irb(main):002:0> ObjectSpace.each_object(Class).inject([]){|a,i|a<< i if i.ancestors.any?{|k|k==ErlixTerm};a}
+=> [ErlixBinary, ErlixTuple, ErlixList, ErlixAtom, ErlixRef, ErlixPid, ErlixFloat, ErlixUInt, ErlixInt]
+irb(main):003:0>
+</code>
+
+We see,there are 9 ErlixTerm classes we hava implemented:
+ ErlixBinary, ErlixTuple, ErlixList, ErlixAtom, ErlixRef, ErlixPid, ErlixFloat, ErlixUInt, ErlixInt
+Here we go on:
+
+<code>
+irb(main):003:0> a1=ErlixAtom.new("atom1")
+=> atom1
+irb(main):004:0> a2=ErlixAtom.new("atom2")
+=> atom2
+irb(main):005:0> f=ErlixFloat.new(17.0)
+=> 17.000000
+irb(main):006:0> b=ErlixBinary.new("data\0data")
+=> #Binary<<...>>
+irb(main):007:0> i=ErlixInt.new(101)
+=> 101
+irb(main):008:0> t=ErlixTuple.new([a1,f,b,a2,i])
+=> #<ErlixTuple:0xb7c37104>
+irb(main):009:0> t.puts
+{atom1,17.000000,#Bin,atom2,101}
+=> nil
+irb(main):010:0> list=ErlixList.new([a1,i,t])
+=> #<ErlixList:0xb7c26598>
+irb(main):011:0> list.puts
+[atom1,101,{atom1,17.000000,#Bin,atom2,101}]
+=> nil
+irb(main):012:0> t[2]
+=> 17.000000
+irb(main):013:0> t[2].class
+=> ErlixFloat
+irb(main):014:0> t[3].class
+=> ErlixBinary
+irb(main):015:0> t.nth(3)==t[3]
+=> true
+irb(main):016:0> list.head
+=> atom1
+irb(main):017:0> list.tail.puts
+[101,{atom1,17.000000,#Bin,atom2,101}]
+=> nil
+irb(main):018:0> list2=list.cons(b)
+=> #<ErlixList:0xb7bfbed8>
+irb(main):019:0> list2.puts
+[#Bin,atom1,101,{atom1,17.000000,#Bin,atom2,101}]
+=> nil
+irb(main):020:0>
+irb(main):021:0> b.data
+=> "data\000data"
+</code>
+
+And we can use match to test a ErlixTerm's format, use mget to get a particular ErlixTerm inside a ErlixTerm:
+
+<code>
+irb(main):023:0> list2.puts
+[#Bin,atom1,101,{atom1,17.000000,#Bin,atom2,101}]
+=> nil
+irb(main):024:0> list2.match("[B,Atom,101,Tuple]")
+=> true
+irb(main):025:0> list2.match("[nomatch,B,Atom,101,Tuple]")
+=> false
+irb(main):027:0> t2=list2.mget("[B,Atom,101,Tuple]","Tuple")
+=> #<ErlixTuple:0xb7bdd9b0>
+irb(main):028:0> t2.puts
+{atom1,17.000000,#Bin,atom2,101}
+=> nil
+irb(main):029:0>
+</code>
+
+2. Play with the Real-Erlang-Node
+
+first write a erlang module for our test:
+
+<code>
+-module(test).
+-compile(export_all).
+loop()->
+    %% receive msg,the msg's format is {FromPid,Msg}
+    %% the FromPid is a pid in our ruby program,
+    %% we use "FromPid ! Msg" to echo the Msg back
+    receive
+        {FromPid,Msg} ->
+            io:format("From:[~w], MSG From Ruby:[~w] ~n",[FromPid,Msg]),
+            FromPid ! Msg,
+            loop()
+    end.
+
+run()->
+    Pid=spawn(fun loop/0),
+    %% Associates the name "my_pid" with Pid
+    %% so that our ruby code can find this pid and send message to it!
+    register(my_pid,Pid).
+</code>
+
+Then we satrt an Erlang-Node to run the test module,you must give the
+erlang-node a short name or name:
+
+<code>
+kdr2@kdr2-pc:~/work/erlix/test$ erl -sname foo
+Erlang (BEAM) emulator version 5.6.5 [source] [smp:2] [async-threads:0] [kernel-poll:false]
+
+Eshell V5.6.5  (abort with ^G)
+(foo@kdr2-pc)1> c(test).
+{ok,test}
+(foo@kdr2-pc)2> test:run().
+true
+(foo@kdr2-pc)3>
+
+</code>
+
+My hostname is "kdr2-pc", with the option "-sname foo",the erlang-node name is "foo@kdr2-pc".
+
+The time we write ruby code with erlix now:
+
+<code>
+#!/usr/bin/ruby
+# -*- coding: utf-8 -*-
+
+require "erlix"
+
+# init ErlixNode,
+#  the first argument is the short-name of the ErlixNode
+#  the second argument is the erlang cookie, use nil it's will read ~/.erlang.cookie
+# after init, my ErlixNode's name is inited to "ruby@kdr2-pc"
+ErlixNode.init("ruby",nil)
+
+# connect to the real Erlang-Node:
+c=ErlixConnection.new("foo@kdr2-pc")
+puts "connect ok"
+
+# create a new Pid with the connection
+# we will use this Pid as the FromPid
+p=ErlixPid.new(c)
+
+# make a ErlixTuple {Pid,test_atom} and send it to the real erlang-node
+c.esend("my_pid",ErlixTuple.new([p,ErlixAtom.new("test_atom")]))
+puts "send ok"
+
+# start a new thread to receive the msg from the real erlang-node
+puts "receiving"
+t=Thread.new{
+  while true do
+    m=c.erecv
+    puts m.mtype
+    m.message.puts
+    puts m.class
+    puts m.from
+    puts m.to
+  end
+}
+
+t.join
+
+</code>
+
+Run the test code:
+
+<code>
+kdr2@kdr2-pc:~/work/erlix$ ruby test/erlix_test.rb
+connect ok
+send ok
+receiving
+ERL_SEND
+test_atom
+ErlixMessage
+nil
+<3.6.3>
+  ...
+</code>
+
+
+The output of erlang:
+
+<code>
+(foo@kdr2-pc)2> test:run().
+true
+From:[<6027.3.6>], MSG From Ruby:[test_atom]
+(foo@kdr2-pc)3>
+</code>
+
+Note : the class ErlixMessage:
+  the method ErlixConnection#erecv return an instance of ErlixMessage,
+  ErlixMessage represents the struct ErlMessge in erl_interface,is has several fields:
+  type/msg/from/to, you can call ErlixMessage#mtype,ErlixMessage#message,ErlixMessage#from,ErlixMessage#to to get them.
+  there's the description of ErlMessage in the erl_connect manual:
+
+     This function receives the message into the specified buffer, and decodes into the (ErlMessage *) emsg.
+
+              fd is an open descriptor to an Erlang connection.
+
+              bufp is a buffer large enough to hold the expected message.
+
+              bufsize indicates the size of bufp.
+
+              emsg is a pointer to an ErlMessage structure, into which the message will be decoded. ErlMessage is defined as follows:
+
+              typedef struct {
+                int type;
+                ETERM *msg;
+                ETERM *to;
+                ETERM *from;
+                char to_name[MAXREGLEN];
+              } ErlMessage;
+
+   Note:
+       The definition of ErlMessage has changed since earlier versions of Erl_Interface.
+
+       type identifies the type of message, one of ERL_SEND, ERL_REG_SEND, ERL_LINK, ERL_UNLINK and ERL_EXIT.
+
+       If  type  contains  ERL_SEND  this indicates that an ordinary send operation has taken place, and emsg->to contains the Pid of the
+       recipient. If type contains ERL_REG_SEND then a registered send operation took place, and  emsg->from  contains  the  Pid  of  the
+       sender. In both cases, the actual message will be in emsg->msg.
+
+       If  type contains one of ERL_LINK or ERL_UNLINK, then emsg->to and emsg->from contain the pids of the sender and receipient of the
+       link or unlink. emsg->msg is not used in these cases.
+
+       If type contains ERL_EXIT, then this indicates that a link has been broken. In this case, emsg->to and emsg->from contain the pids
+       of the linked processes, and emsg->msg contains the reason for the exit.

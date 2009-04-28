@@ -1,0 +1,45 @@
+#-*- org -*-
+#author : kdr2
+
+#++++++++++++++++++++++++++++++++++++++++++++
+* 模块:
+** ErlixTerm
+ represent erlang term
+ 方法:
+ ==(ErlixTerm),eql?(ErlixTerm) 这两个方法按照erlang term的匹配法则匹配，成功则返回true，否则返回false
+ puts 将term的字面字符串打印到标准输出(一般调试用)
+ match("pattern") 检查ErlixTerm是否与pattern match
+ mget("pattern","E") 如果ErlixTerm与pattern相match,并且E为pattern中Unbound Var，则返回匹配后E的值
+
+** ErlixNode
+  方法 init("sname",cookie),init?,name,creation
+
+#++++++++++++++++++++++++++++++++++++++++++++
+* 对应Erlang数据类型的类(这些类混入了ErlixTerm模块):
+** ErlixInt
+  方法 new(int),to_i,to_s,etype
+** ErlixUInt
+  方法 new(int),to_i,to_s,etype
+** ErlixFloat
+  方法 new(float),to_i,to_s,etype
+** ErlixPid
+  方法 new(ErlixConnection),to_s,etype
+** ErlixRef
+  方法 new,to_s,etype
+** ErlixBinary
+  方法 new(String),data,to_s,etype
+** ErlixTuple
+  方法 new([ErlixTerm...]),[](int),nth(int),to_a,to_s,etype
+** ErlixList
+  方法 new([ErlixTerm...]),head,tail,cons(ErlixTerm),to_a,to_s,etype
+** ErlixAtom
+  方法 new(String),to_s,etype
+
+#++++++++++++++++++++++++++++++++++++++++++++
+* 其他类
+** ErlixMessage
+  方法 message,from,to,mtype,etype (参看ErlMessage,at erl_eterm's manpage)
+** ErlixConnection
+  方法 new("sname@host"),esend,erecv,etype
+
+
