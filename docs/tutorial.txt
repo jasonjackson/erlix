@@ -1,21 +1,26 @@
 #author kdr2
 
-0. Intsall erlix
-<code>
+@ http://code.google.com/p/erlix/wiki/ErlixTutorial
+
++++++++++++++++++++++++++
++     Intsall erlix     +
++++++++++++++++++++++++++
+On Linux/Unix only,Need erlang installed.
+
+<src lang="sh">
 unzip erlix-version.zip
 cd erlix-version
 ruby configure.rb
 make
 make install
-</code>
- * Need erlang installed
+</src>
 
 
-1. Play with the ErlixTerm
-ErlixTerm is a Module, represents the erlang-term,. It is mixed into some particular classes,
-like ErlixAtom,ErlixInt,ErlixList... Now we will play with these classes in irb:
-
-First,open irb,and require the erlix lib:
++++++++++++++++++++++++++++++
++  Play with the ErlixTerm  +
++++++++++++++++++++++++++++++
+  ErlixTerm is a Module, represents the erlang-term, It is mixed into some particular classes,like ErlixAtom,ErlixInt,ErlixList... Now we will play with these classes in irb,
+  First,open irb,and require the erlix lib:
 
 <code>
 kdr2@kdr2-pc:~$ irb
@@ -24,16 +29,16 @@ irb(main):001:0> require "erlix"
 irb(main):002:0>
 </code>
 
-Find all ErlixTerm's subclasses:
+  Find all ErlixTerm's subclasses:
+
 <code>
 irb(main):002:0> ObjectSpace.each_object(Class).inject([]){|a,i|a<< i if i.ancestors.any?{|k|k==ErlixTerm};a}
 => [ErlixBinary, ErlixTuple, ErlixList, ErlixAtom, ErlixRef, ErlixPid, ErlixFloat, ErlixUInt, ErlixInt]
 irb(main):003:0>
 </code>
 
-We see,there are 9 ErlixTerm classes we hava implemented:
- ErlixBinary, ErlixTuple, ErlixList, ErlixAtom, ErlixRef, ErlixPid, ErlixFloat, ErlixUInt, ErlixInt
-Here we go on:
+  We see,there are 9 ErlixTerm classes we hava implemented: ErlixBinary, ErlixTuple, ErlixList, ErlixAtom, ErlixRef, ErlixPid, ErlixFloat, ErlixUInt, ErlixInt.
+  Here we go on:
 
 <code>
 irb(main):003:0> a1=ErlixAtom.new("atom1")
@@ -79,7 +84,7 @@ irb(main):021:0> b.data
 => "data\000data"
 </code>
 
-And we can use match to test a ErlixTerm's format, use mget to get a particular ErlixTerm inside a ErlixTerm:
+  And we can use match to test a ErlixTerm's format, use mget to get a particular ErlixTerm inside a ErlixTerm:
 
 <code>
 irb(main):023:0> list2.puts
@@ -97,9 +102,11 @@ irb(main):028:0> t2.puts
 irb(main):029:0>
 </code>
 
-2. Play with the Real-Erlang-Node
+++++++++++++++++++++++++++++++++++++
++  Play with the Real-Erlang-Node  +
+++++++++++++++++++++++++++++++++++++
 
-first write a erlang module for our test:
+  First write a erlang module for our test:
 
 <code>
 -module(test).
@@ -122,8 +129,7 @@ run()->
     register(my_pid,Pid).
 </code>
 
-Then we satrt an Erlang-Node to run the test module,you must give the
-erlang-node a short name or name:
+  Then we satrt an Erlang-Node to run the test module,you must give the erlang-node a short name or name:
 
 <code>
 kdr2@kdr2-pc:~/work/erlix/test$ erl -sname foo
@@ -138,9 +144,9 @@ true
 
 </code>
 
-My hostname is "kdr2-pc", with the option "-sname foo",the erlang-node name is "foo@kdr2-pc".
+  My hostname is "kdr2-pc", with the option "-sname foo",the erlang-node name is "foo@kdr2-pc".
 
-The time we write ruby code with erlix now:
+  The time we write ruby code with erlix now:
 
 <code>
 #!/usr/bin/ruby
@@ -183,7 +189,7 @@ t.join
 
 </code>
 
-Run the test code:
+  Run the test code:
 
 <code>
 kdr2@kdr2-pc:~/work/erlix$ ruby test/erlix_test.rb
@@ -198,8 +204,7 @@ nil
   ...
 </code>
 
-
-The output of erlang:
+  The output of erlang:
 
 <code>
 (foo@kdr2-pc)2> test:run().
@@ -209,11 +214,15 @@ From:[<6027.3.6>], MSG From Ruby:[test_atom]
 </code>
 
 Note : the class ErlixMessage:
-  the method ErlixConnection#erecv return an instance of ErlixMessage,
-  ErlixMessage represents the struct ErlMessge in erl_interface,is has several fields:
-  type/msg/from/to, you can call ErlixMessage#mtype,ErlixMessage#message,ErlixMessage#from,ErlixMessage#to to get them.
-  there's the description of ErlMessage in the erl_connect manual:
+  The method ErlixConnection#erecv return an instance of ErlixMessage, ErlixMessage represents the struct ErlMessge in erl_interface,is has several fields:
+  1.type
+  2.msg
+  3.from
+  4.to
+  You can call ErlixMessage#mtype,ErlixMessage#message,ErlixMessage#from,ErlixMessage#to to get them.
+  There's the description of ErlMessage in the erl_connect manual:
 
+     -----------------------------------------------(from erl -man erl_connect)------------------------------------------------------
      This function receives the message into the specified buffer, and decodes into the (ErlMessage *) emsg.
 
               fd is an open descriptor to an Erlang connection.
@@ -246,3 +255,7 @@ Note : the class ErlixMessage:
 
        If type contains ERL_EXIT, then this indicates that a link has been broken. In this case, emsg->to and emsg->from contain the pids
        of the linked processes, and emsg->msg contains the reason for the exit.
+   ---------------------------------------------------------(manpage end)-------------------------------------------------------------
+
+
+   EOF
