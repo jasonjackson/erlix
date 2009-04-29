@@ -243,9 +243,9 @@ The method ErlixConnection#erecv return an instance of ErlixMessage, ErlixMessag
 # from
 # to
 You can call @ErlixMessage#mtype@,@ErlixMessage#message@,@ErlixMessage#from@,@ErlixMessage#to@ to get them.
-There's the description of ErlMessage in the erl_connect manual:
+There's the description of ErlMessage from the erl_connect manual:
 
------------------------------------------------(from erl -man erl_connect)------------------------------------------------------
+<pre><code>
      This function receives the message into the specified buffer, and decodes into the (ErlMessage *) emsg.
 
               fd is an open descriptor to an Erlang connection.
@@ -278,7 +278,7 @@ There's the description of ErlMessage in the erl_connect manual:
 
        If type contains ERL_EXIT, then this indicates that a link has been broken. In this case, emsg->to and emsg->from contain the pids
        of the linked processes, and emsg->msg contains the reason for the exit.
----------------------------------------------------------(manpage end)-------------------------------------------------------------
+</code></pre>
 
 h3. Erlix RPC
 
