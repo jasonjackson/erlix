@@ -225,7 +225,7 @@ ErlixMessage
 nil
 <3.6.3>
 ...
-</code><pre>
+</code></pre>
 
 The output of erlang:
 
