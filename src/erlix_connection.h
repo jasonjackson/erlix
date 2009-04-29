@@ -38,7 +38,8 @@ static VALUE erlix_connection_etype(VALUE self);
 static VALUE erlix_connection_mkpid(VALUE self);
 static VALUE erlix_connection_send(VALUE self,VALUE pid,VALUE term);
 static VALUE erlix_connection_recv(VALUE self);
-
+static VALUE erlix_connection_rpc(VALUE self,VALUE module,VALUE func,VALUE args);
+static VALUE erlix_connection_close(VALUE self);
 
 
 void init_erlix_connection();

@@ -257,5 +257,24 @@ Note : the class ErlixMessage:
        of the linked processes, and emsg->msg contains the reason for the exit.
    ---------------------------------------------------------(manpage end)-------------------------------------------------------------
 
++++++++++++++++++++++++++
++       Erlix RPC       +
++++++++++++++++++++++++++
+
+<code>
+c=ErlixConnection.new("foo@kdr2-pc")
+
+#rpc call
+fmt=ErlixList.new("abc~n")
+tmp=ErlixList.new(nil)
+args=ErlixList.new([fmt,tmp])
+ret=c.rpc("io","format",args)
+puts ret;
+puts ret.class
+</code>
+
+  Note : Before you make a ErlixConnection#rpc call,  ErlixConnection#erecv call must be stopped(There may be an thread runing and blocking on erecv call,you can make rpc-thead and erecv-thread as two mutual exclusive threads). After the ErlixConnection#rpc returned ErlixConnection#recv can be calledagin.
 
    EOF
+
+

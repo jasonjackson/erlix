@@ -3,33 +3,51 @@
 
 require "erlix"
 
-#将ruby进程作为erlang node,先初始化
-#第一个参数是erl-node-name(-sname 参数,)第二个是cookie,nil时会读~/.erlang.cookie
+# init ErlixNode,
+#   *the first argument is the short-name of the ErlixNode
+#   *the second argument is the erlang cookie, use nil it's will read ~/.erlang.cookie
+# after init, my ErlixNode's name is inited to "ruby@kdr2-pc"
 ErlixNode.init("ruby",nil)
 
-#连接一个真实的erl-node(用"erl -sname foo"启动的,我的hostname是kdr2-pc)
+# connect to the real Erlang-Node:
 c=ErlixConnection.new("foo@kdr2-pc")
 puts "connect ok"
 
-#新建一个pid,发给foo@kdr2-pc,对方拿到这个pid可以回信
+
+#rpc call
+fmt=ErlixList.new("abc~n")
+tmp=ErlixList.new(nil)
+args=ErlixList.new([fmt,tmp])
+ret=c.rpc("io","format",args)
+puts ret;
+puts ret.class
+
+# create a new Pid with the connection
+# we will use this Pid as the FromPid
 p=ErlixPid.new(c)
 
-#发消息,ErlixTuple.new([p,ErlixAtom.new("test_atom")])就是{<Pid>,test_atom)}
+# make a ErlixTuple {Pid,test_atom} and send it to the real erlang-node
 c.esend("my_pid",ErlixTuple.new([p,ErlixAtom.new("test_atom")]))
-
 puts "send ok"
 
-#新起线程收消息
+# start a new thread to receive the msg from the real erlang-node
 puts "receiving"
-t=Thread.new{
+t=Thread.start("thread recv"){ |name|
   while true do
+    puts "+++++"
     m=c.erecv
     puts m.mtype
     m.message.puts
     puts m.class
     puts m.from
     puts m.to
+    puts "-----"
   end
+}
+
+#send more test:
+3.times{
+c.esend("my_pid",ErlixTuple.new([p,ErlixAtom.new("test_atom")]))
 }
 
 t.join

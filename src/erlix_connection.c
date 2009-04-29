@@ -24,7 +24,7 @@ ErlixConnection* new_erlix_connection(){
 void free_erlix_connection(void *econ){
   ErlixConnection* ep=econ;
   ERLIX_CONNECTION_DEAD(ep);
-  close(ep->sock_fd);
+  erl_close_connection(ep->sock_fd);
   free(ep);
 }
 
@@ -130,6 +130,10 @@ static VALUE erlix_connection_recv(VALUE self){
   }
   ErlMessage emsg;
   for(;;){
+    //bugfixed! for 1.8.7 thread block!
+    if(rb_io_wait_readable(con->sock_fd)!=Qtrue){
+      rb_thread_wait_fd(con->sock_fd);
+    }
     int ret=erl_receive_msg(con->sock_fd,NULL,0,&emsg);
     if (ret == ERL_MSG) {
       VALUE m=erlix_message_alloc(erlix_cErlixMessage);
@@ -162,12 +166,63 @@ static VALUE erlix_connection_recv(VALUE self){
   return Qnil;
 }
 
+static VALUE erlix_connection_rpc(VALUE self,VALUE module,VALUE func,VALUE args){
+  VALUE m=StringValue(module);
+  VALUE f=StringValue(func);
+  if(!IS_ETERM(args)){
+    rb_raise(rb_eTypeError,"wrong argument type,the data is not an ErlixList!");
+    return Qnil;
+  }
+  ErlixTerm* a;
+  Data_Get_Struct(args,ErlixTerm,a);
+  if(a->type!=TYPE_LIST){
+    rb_raise(rb_eTypeError,"wrong argument type,the data is not an ErlixList!");
+    return Qnil;
+  }
+  ErlixConnection *con;
+  Data_Get_Struct(self,ErlixConnection,con);
+  ETERM *result=erl_rpc(con->sock_fd, RSTRING(m)->ptr,RSTRING(f)->ptr, a->term);
+  if(result==NULL){
+    if(erl_errno==ENOMEM){
+      rb_raise(rb_eException,"rpc error: no memory");
+    }else if(erl_errno==EIO){
+      rb_raise(rb_eException,"rpc error: I/O error");
+    }else if(erl_errno==ETIMEDOUT){
+      rb_raise(rb_eException,"rpc error: timeout");
+    }else if(erl_errno==EAGAIN){
+      rb_raise(rb_eException,"rpc error: Temporary error, Try again");
+    }
+    return Qnil;
+  }
+  return erlix_term(result);
+}
+
+static VALUE erlix_connection_close(VALUE self){
+  ErlixConnection *con;
+  Data_Get_Struct(self,ErlixConnection,con);
+  ERLIX_CONNECTION_DEAD(con);
+  close(con->sock_fd);
+  return Qtrue;
+}
+
+static VALUE erlix_connection_isclosed(VALUE self){
+  ErlixConnection *con;
+  Data_Get_Struct(self,ErlixConnection,con);
+  if(ERLIX_CONNECTION_ALIVE(con)){
+    return Qfalse;
+  }
+  return Qtrue;
+}
 
 void init_erlix_connection(){
   erlix_cErlixConnection=rb_define_class("ErlixConnection",rb_cObject);
   rb_define_alloc_func(erlix_cErlixConnection,erlix_connection_alloc);
   rb_define_method(erlix_cErlixConnection,"initialize",erlix_connection_init,1);
   rb_define_method(erlix_cErlixConnection,"initialize_copy",erlix_connection_init_copy,1);
+  rb_define_method(erlix_cErlixConnection,"peer",erlix_connection_peer,0);
   rb_define_method(erlix_cErlixConnection,"esend",erlix_connection_send,2);
   rb_define_method(erlix_cErlixConnection,"erecv",erlix_connection_recv,0);
+  rb_define_method(erlix_cErlixConnection,"rpc",erlix_connection_rpc,3);
+  rb_define_method(erlix_cErlixConnection,"close",erlix_connection_close,0);
+  rb_define_method(erlix_cErlixConnection,"closed?",erlix_connection_isclosed,0);
 }

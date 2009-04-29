@@ -20,32 +20,38 @@ VALUE erlix_list_init(VALUE self,VALUE ary){
   ErlixTerm *list;
   Data_Get_Struct(self,ErlixTerm,list);
 
-  VALUE array=rb_check_array_type(ary);
-  if(NIL_P(array)||RARRAY(array)->len==0){
+  if(NIL_P(ary)){
     //empty list
     list->term=erl_format("[]");
-    return self;
-  }
-  int i;
-  //check: all elements' must be ErlixTerm
-  for(i=0;i<RARRAY(array)->len;i++){
-    VALUE e=RARRAY(array)->ptr[i];
-    if(!IS_ETERM(e)){
-      rb_raise(rb_eTypeError,"all list's elements must be ErlixTerm!");
+  }else if(TYPE(ary)==T_ARRAY){
+    if(RARRAY(ary)->len==0){
+      //empty list
+      list->term=erl_format("[]");
+    }else{
+      int i;
+      //check: all elements' must be ErlixTerm
+      for(i=0;i<RARRAY(ary)->len;i++){
+        VALUE e=RARRAY(ary)->ptr[i];
+        if(!IS_ETERM(e)){
+          rb_raise(rb_eTypeError,"all list's elements must be ErlixTerm!");
+        }
+      }
+      ETERM **les=(ETERM**)malloc(sizeof(ETERM*)*(RARRAY(ary)->len));
+      for(i=0;i<RARRAY(ary)->len;i++){
+        VALUE e=RARRAY(ary)->ptr[i];
+        ErlixTerm *ep;
+        Data_Get_Struct(e,ErlixTerm,ep);
+        *(les+i)=erl_copy_term(ep->term);
+      }
+      list->term=erl_mk_list(les,RARRAY(ary)->len);
+      for(i=0;i<RARRAY(ary)->len;i++){
+        erl_free_term(*(les+i));
+      }
+      free(les);
     }
+  }else if(TYPE(ary)==T_STRING){
+    list->term=erl_mk_estring(RSTRING(ary)->ptr, RSTRING(ary)->len);
   }
-  ETERM **les=(ETERM**)malloc(sizeof(ETERM*)*(RARRAY(array)->len));
-  for(i=0;i<RARRAY(array)->len;i++){
-    VALUE e=RARRAY(array)->ptr[i];
-    ErlixTerm *ep;
-    Data_Get_Struct(e,ErlixTerm,ep);
-    *(les+i)=erl_copy_term(ep->term);
-  }
-  list->term=erl_mk_list(les,RARRAY(array)->len);
-  for(i=0;i<RARRAY(array)->len;i++){
-    erl_free_term(*(les+i));
-  }
-  free(les);
   return self;
 }
 

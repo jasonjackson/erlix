@@ -40,6 +40,6 @@
 ** ErlixMessage
   方法 message,from,to,mtype,etype (参看ErlMessage,at erl_eterm's manpage)
 ** ErlixConnection
-  方法 new("sname@host"),esend,erecv,etype
+  方法 new("sname@host"),esend,erecv,etype,close.closed?,rpc,peer
 
 

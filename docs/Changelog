@@ -3,6 +3,18 @@
 
 Changelog:
 
+v0.3:
+* bugfix:
+  IO block bug in ErlixConnection#erecv
+
+* feature:
+  ErlixList#new("string")
+  ErlixConnection#close
+  ErlixConnection#closed?
+  ErlixConnection#rpc("module","function",ErlixTermList)
+  ErlixConnection#peer
+
+v0.2:
 * implemented erlang-data-type:
  TYPE_ATOM
  TYPE_INT
