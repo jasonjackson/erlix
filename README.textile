@@ -115,7 +115,7 @@ irb(main):021:0> b.data
 => "data\000data"
 </code></pre>
 
-<a name="fn1"/>Some Ruby-Type var can be auto-convert to particular Erlang-Type:
+<a name="fn1">Some Ruby-Type var can be auto-convert to particular Erlang-Type:</a>
 <pre><code>
 /*
  * Type Automatic Convert
@@ -141,7 +141,7 @@ irb(main):012:0> c.head.class
 irb(main):013:0>
 </code></pre>
 
-<a name="fn1"/> Use singleton method [] to create ErlixTuple/ErlixList
+<a name="fn2">Use singleton method [] to create ErlixTuple/ErlixList</a>
 <pre><code>
 irb(main):015:0> c=ErlixList["string-to-atom",1,:symbol_to_atom,1.00]
 => #<ErlixList:0xb7c1e884>
