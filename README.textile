@@ -1,14 +1,15 @@
 h2. Erlix Tutorial
 
-h3. Changlog
+h3. Changelog
 
-h4. 20040430 update
+
+h4. 20090430 update
 
 * features:
 ** Type auto-convert[1]
 ** [] singleton method for ErlixTuple and ErlixList[2]
 
-h4. erlix-v0.3 changlog:
+h4. erlix-v0.3 changelog:
 
 * bugfix:
 ** IO block bug in ErlixConnection#erecv
@@ -167,7 +168,11 @@ irb(main):027:0> t2=list2.mget("[B,Atom,101,Tuple]","Tuple")
 irb(main):028:0> t2.puts
 {atom1,17.000000,#Bin,atom2,101}
 => nil
-irb(main):029:0>
+irb(main):029:0> a=%w[abc def xyz]
+=> ["abc", "def", "xyz"]
+irb(main):039:0> t=ErlixTuple[*a]
+=> #<ErlixTuple:0xb7c6b1ac>
+
 </code></pre>
 
 h3. Play with the Real-Erlang-Node
