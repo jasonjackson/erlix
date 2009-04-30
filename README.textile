@@ -2,6 +2,12 @@ h2. Erlix Tutorial
 
 h3. Changlog
 
+h4. 20040430 update
+
+* features:
+** Type auto-convert[1]
+** ErlixTuple[...] and ErlixList[...] [2]
+
 h4. erlix-v0.3 changlog:
 
 * bugfix:
@@ -62,6 +68,7 @@ We see,there are 9 ErlixTerm classes we hava implemented:
 # ErlixUInt
 # ErlixInt
 
+
 Here we go on:
 
 <pre><code>
@@ -106,6 +113,43 @@ irb(main):019:0> list2.puts
 irb(main):020:0>
 irb(main):021:0> b.data
 => "data\000data"
+</code></pre>
+
+fn1. Some Ruby-Type var can be auto-convert to particular Erlang-Type:
+<pre><code>
+/*
+ * Type Automatic Convert
+ *  Ruby-Type ->  Erlang-Type
+ *  FixNum    ->  ErlixInt
+ *  Float     ->  ErlixFloat
+ *  String    ->  ErlixAtom
+ *  Symbol    ->  ErlixAtom
+ *
+ */
+</code></pre>
+
+See below
+
+<pre><code>
+irb(main):010:0> c=ErlixList.new(["string-to-atom",1,:symbol_to_atom,1.00])
+=> #<ErlixList:0xb7c33220>
+irb(main):011:0> c.puts
+['string-to-atom',1,symbol_to_atom,1.000000]
+=> nil
+irb(main):012:0> c.head.class
+=> ErlixAtom
+irb(main):013:0>
+</code></pre>
+
+fn2. Use singleton method [] to create ErlixTuple/ErlixList
+<pre><code>
+irb(main):015:0> c=ErlixList["string-to-atom",1,:symbol_to_atom,1.00]
+=> #<ErlixList:0xb7c1e884>
+irb(main):016:0> t=ErlixTuple["string-to-atom",1,:symbol_to_atom,1.00]
+=> #<ErlixTuple:0xb7c1a414>
+irb(main):017:0> t[3]
+=> symbol_to_atom
+
 </code></pre>
 
 And we can use @match@ to test a ErlixTerm's format, use @mget@ to get a particular ErlixTerm inside a ErlixTerm:

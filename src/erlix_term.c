@@ -98,6 +98,18 @@ VALUE erlix_term_mget(VALUE self,VALUE string,VALUE e){
   return ret;;
 }
 
+ETERM *erlix_auto_conv(VALUE v){
+  if(SYMBOL_P(v)){
+    return erl_mk_atom(rb_id2name(SYM2ID(v)));
+  }else if(FIXNUM_P(v)){
+    return erl_mk_int(FIX2INT(v));
+  }else if(TYPE(v)==T_FLOAT){
+    return erl_mk_float(NUM2DBL(v));
+  }else if(TYPE(v)==T_STRING){
+    return erl_mk_atom(RSTRING(v)->ptr);
+  }
+  return NULL;
+}
 
 unsigned long erlix_term_type(ETERM *t){
   if(ERL_IS_INTEGER(t))return TYPE_INT;

@@ -29,19 +29,23 @@ VALUE erlix_list_init(VALUE self,VALUE ary){
       list->term=erl_format("[]");
     }else{
       int i;
-      //check: all elements' must be ErlixTerm
+      //check: all elements' must be ErlixTerm or auto-convertable Type
       for(i=0;i<RARRAY(ary)->len;i++){
         VALUE e=RARRAY(ary)->ptr[i];
-        if(!IS_ETERM(e)){
-          rb_raise(rb_eTypeError,"all list's elements must be ErlixTerm!");
+        if(!IS_ETERM(e) && !CAN_AUTO_CONV(e)){
+          rb_raise(rb_eTypeError,"all list's elements must be ErlixTerm or Auto-Convertable-Type!");
         }
       }
       ETERM **les=(ETERM**)malloc(sizeof(ETERM*)*(RARRAY(ary)->len));
       for(i=0;i<RARRAY(ary)->len;i++){
         VALUE e=RARRAY(ary)->ptr[i];
-        ErlixTerm *ep;
-        Data_Get_Struct(e,ErlixTerm,ep);
-        *(les+i)=erl_copy_term(ep->term);
+        if(IS_ETERM(e)){
+          ErlixTerm *ep;
+          Data_Get_Struct(e,ErlixTerm,ep);
+          *(les+i)=erl_copy_term(ep->term);
+        }else{
+          *(les+i)=erlix_auto_conv(e);
+        }
       }
       list->term=erl_mk_list(les,RARRAY(ary)->len);
       for(i=0;i<RARRAY(ary)->len;i++){
@@ -55,6 +59,39 @@ VALUE erlix_list_init(VALUE self,VALUE ary){
   return self;
 }
 
+VALUE erlix_list_create(int argc,VALUE *argv,VALUE klass){
+  ETERM *rterm;
+  if(argc==0){
+    //empty list
+    rterm=erl_format("[]");
+  }else{
+    int i;
+    //check: all elements' must be ErlixTerm or auto-convertable Type
+    for(i=0;i<argc;i++){
+      VALUE e=argv[i];
+      if(!IS_ETERM(e) && !CAN_AUTO_CONV(argv[i])){
+        rb_raise(rb_eTypeError,"all list's elements must be ErlixTerm or Auto-Convertable-Type!");
+      }
+    }
+    ETERM **les=(ETERM**)malloc(sizeof(ETERM*)*argc);
+    for(i=0;i<argc;i++){
+      VALUE e=argv[i];
+      if(IS_ETERM(e)){
+        ErlixTerm *ep;
+        Data_Get_Struct(e,ErlixTerm,ep);
+        *(les+i)=erl_copy_term(ep->term);
+      }else{
+        *(les+i)=erlix_auto_conv(e);
+      }
+    }
+    rterm=erl_mk_list(les,argc);
+    for(i=0;i<argc;i++){
+      erl_free_term(*(les+i));
+    }
+    free(les);
+  }
+  return erlix_term(rterm);
+}
 
 //TODO
 VALUE erlix_list_to_str(VALUE self);
@@ -126,6 +163,8 @@ void init_erlix_list(){
   rb_define_method(erlix_cErlixList,"to_a",erlix_list_to_ary,0);
   rb_define_method(erlix_cErlixList,"size",erlix_list_size,0);
   rb_define_method(erlix_cErlixList,"etype",erlix_list_etype,0);
+
+  rb_define_singleton_method(erlix_cErlixList,"[]",erlix_list_create,-1);
 
   rb_include_module(erlix_cErlixList,erlix_mErlixTerm);
 }

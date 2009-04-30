@@ -14,6 +14,7 @@
 
 VALUE erlix_tuple_alloc(VALUE klass);
 VALUE erlix_tuple_init(VALUE self,VALUE ary);
+VALUE erlix_tuple_create(int argc,VALUE *argv,VALUE klass);
 VALUE erlix_tuple_nth(VALUE self,VALUE index);
 VALUE erlix_tuple_to_str(VALUE self);
 VALUE erlix_tuple_to_ary(VALUE self);

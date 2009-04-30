@@ -14,6 +14,7 @@
 
 VALUE erlix_list_alloc(VALUE klass);
 VALUE erlix_list_init(VALUE self,VALUE string);
+VALUE erlix_list_create(int argc,VALUE *argv,VALUE klass);
 VALUE erlix_list_head(VALUE self);
 VALUE erlix_list_tail(VALUE self);
 VALUE erlix_list_cons(VALUE self,VALUE head);

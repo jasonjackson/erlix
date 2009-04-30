@@ -48,6 +48,21 @@ extern VALUE erlix_cErlixConnection;
 extern VALUE erlix_mErlixTerm;
 extern VALUE erlix_mErlixNode;
 
+/*
+ * Type Automatic Convert
+ *  Ruby-Type ->  Erlang-Type
+ *  FixNum    ->  ErlixInt
+ *  Float     ->  ErlixFloat
+ *  String    ->  ErlixAtom
+ *  Symbol    ->  ErlixAtom
+ *
+ */
+#define CAN_AUTO_CONV(v) ((FIXNUM_P(v)) || \
+                          (SYMBOL_P(v)) || \
+                          (TYPE(v)==T_FLOAT) || \
+                          (TYPE(v)==T_STRING))
+ETERM *erlix_auto_conv(VALUE v);
+
 ErlixTerm* new_erlix_term();
 void free_erlix_term(void* p);
 

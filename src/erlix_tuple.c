@@ -28,18 +28,23 @@ VALUE erlix_tuple_init(VALUE self,VALUE ary){
   }
   int i;
   //check: all elements' must be ErlixTerm
+  //TODO: automatic conversions
   for(i=0;i<RARRAY(array)->len;i++){
     VALUE e=RARRAY(array)->ptr[i];
-    if(!IS_ETERM(e)){
+    if(!IS_ETERM(e) && !CAN_AUTO_CONV(e)){
       rb_raise(rb_eTypeError,"all tuple's elements must be ErlixTerm!");
     }
   }
   ETERM **tes=(ETERM**)malloc(sizeof(ETERM*)*(RARRAY(array)->len));
   for(i=0;i<RARRAY(array)->len;i++){
     VALUE e=RARRAY(array)->ptr[i];
-    ErlixTerm *ep;
-    Data_Get_Struct(e,ErlixTerm,ep);
-    *(tes+i)=erl_copy_term(ep->term);
+    if(IS_ETERM(e)){
+      ErlixTerm *ep;
+      Data_Get_Struct(e,ErlixTerm,ep);
+      *(tes+i)=erl_copy_term(ep->term);
+    }else{
+      *(tes+i)=erlix_auto_conv(e);
+    }
   }
   tuple->term=erl_mk_tuple(tes,RARRAY(array)->len);
   for(i=0;i<RARRAY(array)->len;i++){
@@ -47,6 +52,39 @@ VALUE erlix_tuple_init(VALUE self,VALUE ary){
   }
   free(tes);
   return self;
+}
+
+VALUE erlix_tuple_create(int argc,VALUE *argv,VALUE klass){
+  ETERM *rterm=NULL;
+  if(argc==0){
+    //empty tuple
+    rterm=erl_format("{}");
+  }else if(argc>0){
+    int i;
+    //check: all elements' must be ErlixTerm
+    //TODO: automatic conversions
+    for(i=0;i<argc;i++){
+      if(!IS_ETERM(argv[i]) && !CAN_AUTO_CONV(argv[i])){
+        rb_raise(rb_eTypeError,"all tuple's elements must be ErlixTerm!");
+      }
+    }
+    ETERM **tes=(ETERM**)malloc(sizeof(ETERM*)*argc);
+    for(i=0;i<argc;i++){
+      if(IS_ETERM(argv[i])){
+        ErlixTerm *ep;
+        Data_Get_Struct(argv[i],ErlixTerm,ep);
+        *(tes+i)=erl_copy_term(ep->term);
+      }else{
+        *(tes+i)=erlix_auto_conv(argv[i]);
+      }
+    }
+    rterm=erl_mk_tuple(tes,argc);
+    for(i=0;i<argc;i++){
+      erl_free_term(*(tes+i));
+    }
+    free(tes);
+  }
+  return erlix_term(rterm);
 }
 
 VALUE erlix_tuple_nth(VALUE self,VALUE index){
@@ -101,6 +139,8 @@ void init_erlix_tuple(){
   rb_define_method(erlix_cErlixTuple,"to_a",erlix_tuple_to_ary,0);
   rb_define_method(erlix_cErlixTuple,"size",erlix_tuple_size,0);
   rb_define_method(erlix_cErlixTuple,"etype",erlix_tuple_etype,0);
+
+  rb_define_singleton_method(erlix_cErlixTuple, "[]", erlix_tuple_create, -1);
 
   rb_include_module(erlix_cErlixTuple,erlix_mErlixTerm);
 }
