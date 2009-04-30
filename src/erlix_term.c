@@ -106,7 +106,7 @@ ETERM *erlix_auto_conv(VALUE v){
   }else if(TYPE(v)==T_FLOAT){
     return erl_mk_float(NUM2DBL(v));
   }else if(TYPE(v)==T_STRING){
-    return erl_mk_atom(RSTRING(v)->ptr);
+    return erl_mk_estring(RSTRING(v)->ptr,RSTRING(v)->len);
   }
   return NULL;
 }

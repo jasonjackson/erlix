@@ -123,7 +123,7 @@ irb(main):021:0> b.data
  *  Ruby-Type ->  Erlang-Type
  *  FixNum    ->  ErlixInt
  *  Float     ->  ErlixFloat
- *  String    ->  ErlixAtom
+ *  String    ->  ErlixList
  *  Symbol    ->  ErlixAtom
  *
  */
@@ -132,25 +132,26 @@ irb(main):021:0> b.data
 See below
 
 <pre><code>
-irb(main):010:0> c=ErlixList.new(["string-to-atom",1,:symbol_to_atom,1.00])
-=> #<ErlixList:0xb7c33220>
-irb(main):011:0> c.puts
-['string-to-atom',1,symbol_to_atom,1.000000]
+irb(main):016:0> c=ErlixList.new(["string-to-list",1,:symbol_to_atom,1.00])
+=> #<ErlixList:0xb7bddb2c>
+irb(main):017:0> c.puts
+["string-to-list",1,symbol_to_atom,1.000000]
 => nil
-irb(main):012:0> c.head.class
-=> ErlixAtom
-irb(main):013:0>
+irb(main):018:0> c.head.class
+=> ErlixList
+irb(main):019:0>
 </code></pre>
 
 <a name="fn2">Use singleton method [] to create ErlixTuple/ErlixList</a>
 <pre><code>
-irb(main):015:0> c=ErlixList["string-to-atom",1,:symbol_to_atom,1.00]
-=> #<ErlixList:0xb7c1e884>
-irb(main):016:0> t=ErlixTuple["string-to-atom",1,:symbol_to_atom,1.00]
-=> #<ErlixTuple:0xb7c1a414>
-irb(main):017:0> t[3]
+irb(main):019:0> c=ErlixList["string-to-list",1,:symbol_to_atom,1.00]
+=> #<ErlixList:0xb7bd5c38>
+irb(main):020:0> t=ErlixTuple["string-to-list",1,:symbol_to_atom,1.00]
+=> #<ErlixTuple:0xb7bd079c>
+irb(main):021:0> t[1]
+=> #<ErlixList:0xb7bcd308>
+irb(main):022:0> t[3]
 => symbol_to_atom
-
 </code></pre>
 
 And we can use @match@ to test a ErlixTerm's format, use @mget@ to get a particular ErlixTerm inside a ErlixTerm:

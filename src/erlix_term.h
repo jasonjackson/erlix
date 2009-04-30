@@ -53,7 +53,7 @@ extern VALUE erlix_mErlixNode;
  *  Ruby-Type ->  Erlang-Type
  *  FixNum    ->  ErlixInt
  *  Float     ->  ErlixFloat
- *  String    ->  ErlixAtom
+ *  String    ->  ErlixList
  *  Symbol    ->  ErlixAtom
  *
  */
