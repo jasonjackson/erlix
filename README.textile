@@ -6,7 +6,7 @@ h4. 20040430 update
 
 * features:
 ** Type auto-convert[1]
-** ErlixTuple[...] and ErlixList[...] [2]
+** [] singleton method for ErlixTuple and ErlixList[2]
 
 h4. erlix-v0.3 changlog:
 
@@ -115,7 +115,7 @@ irb(main):021:0> b.data
 => "data\000data"
 </code></pre>
 
-fn1. Some Ruby-Type var can be auto-convert to particular Erlang-Type:
+<a name="fn1"/>Some Ruby-Type var can be auto-convert to particular Erlang-Type:
 <pre><code>
 /*
  * Type Automatic Convert
@@ -141,7 +141,7 @@ irb(main):012:0> c.head.class
 irb(main):013:0>
 </code></pre>
 
-fn2. Use singleton method [] to create ErlixTuple/ErlixList
+<a name="fn1"/> Use singleton method [] to create ErlixTuple/ErlixList
 <pre><code>
 irb(main):015:0> c=ErlixList["string-to-atom",1,:symbol_to_atom,1.00]
 => #<ErlixList:0xb7c1e884>
