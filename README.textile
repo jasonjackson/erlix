@@ -1,4 +1,4 @@
-h2. Erlix Tutorial
+h2. <a name="erlix_tutorial">Erlix Tutorial</a>
 
 h3. Changelog
 
@@ -107,17 +107,13 @@ irb(main):017:0> list2=list.cons(b)
 </code></pre>
 
 <a name="fn1">Some Ruby-Type var can be auto-convert to particular Erlang-Type:</a>
-<pre><code>
-/*
- * Type Automatic Convert
- *  Ruby-Type ->  Erlang-Type
- *  FixNum    ->  ErlixInt
- *  Float     ->  ErlixFloat
- *  String    ->  ErlixList
- *  Symbol    ->  ErlixAtom
- *
- */
-</code></pre>
+
+|Ruby-Type | -> | Erlang-Type |
+|FixNum    | -> | ErlixInt    |
+|Float     | -> | ErlixFloat  |
+|String    | -> | ErlixList   |
+|Symbol    | -> | ErlixAtom   |
+
 
 See below
 
