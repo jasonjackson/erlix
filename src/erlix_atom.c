@@ -26,12 +26,6 @@ VALUE erlix_atom_init(VALUE self,VALUE string){
 }
 
 
-VALUE erlix_atom_to_str(VALUE self){
-  ErlixTerm* atom;
-  Data_Get_Struct(self,ErlixTerm,atom);
-  return rb_str_new2(ERL_ATOM_PTR(atom->term));
-}
-
 VALUE erlix_atom_size(VALUE self){
   ErlixTerm *atom;
   Data_Get_Struct(self,ErlixTerm,atom);
@@ -48,7 +42,6 @@ void init_erlix_atom(){
 
   rb_define_alloc_func(erlix_cErlixAtom,erlix_atom_alloc);
   rb_define_method(erlix_cErlixAtom,"initialize",erlix_atom_init,1);
-  rb_define_method(erlix_cErlixAtom,"to_s",erlix_atom_to_str,0);
   rb_define_method(erlix_cErlixAtom,"size",erlix_atom_size,0);
   rb_define_method(erlix_cErlixAtom,"etype",erlix_atom_etype,0);
 

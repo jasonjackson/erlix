@@ -48,9 +48,9 @@ VALUE erlix_list_init(VALUE self,VALUE ary){
         }
       }
       list->term=erl_mk_list(les,RARRAY(ary)->len);
-      for(i=0;i<RARRAY(ary)->len;i++){
-        erl_free_term(*(les+i));
-      }
+      //for(i=0;i<RARRAY(ary)->len;i++){
+      //  erl_free_term(*(les+i));
+      //}
       free(les);
     }
   }else if(TYPE(ary)==T_STRING){
@@ -85,17 +85,14 @@ VALUE erlix_list_create(int argc,VALUE *argv,VALUE klass){
       }
     }
     rterm=erl_mk_list(les,argc);
-    for(i=0;i<argc;i++){
-      erl_free_term(*(les+i));
-    }
+    //for(i=0;i<argc;i++){
+    //  erl_free_term(*(les+i));
+    //}
     free(les);
   }
   return erlix_term(rterm);
 }
 
-//TODO
-VALUE erlix_list_to_str(VALUE self);
-//TODO
 VALUE erlix_list_to_ary(VALUE self){
   ErlixTerm *list;
   Data_Get_Struct(self,ErlixTerm,list);
@@ -105,10 +102,13 @@ VALUE erlix_list_to_ary(VALUE self){
   int i=0;
   while(!ERL_IS_EMPTY_LIST(ep)){
     hd=erl_hd(ep);
-    rb_ary_store(ret,i,erlix_term(hd));
+    rb_ary_store(ret,i,erlix_term(erl_copy_term(hd)));
     tmp=erl_tl(ep);
-    if(ep!=list->term)erl_free_term(ep);
+    //if(ep!=list->term)erl_free_term(ep);
     ep=tmp;
+    //if(ERL_IS_EMPTY_LIST(ep)){
+    //  erl_free_term(ep);
+    //}
     ++i;
   }
   return ret;
@@ -117,28 +117,41 @@ VALUE erlix_list_to_ary(VALUE self){
 VALUE erlix_list_head(VALUE self){
   ErlixTerm *list;
   Data_Get_Struct(self,ErlixTerm,list);
+  if(ERL_IS_EMPTY_LIST(list->term)){
+    return Qnil;
+  }
   ETERM *ep=erl_hd(list->term);
-  return erlix_term(ep);
+  return erlix_term(erl_copy_term(ep));
 }
 
 VALUE erlix_list_tail(VALUE self){
   ErlixTerm *list;
   Data_Get_Struct(self,ErlixTerm,list);
-
+  if(ERL_IS_EMPTY_LIST(list->term)){
+    return Qnil;
+  }
   ETERM *ep=erl_tl(list->term);
-  return erlix_term(ep);
+  return erlix_term(erl_copy_term(ep));
 }
 
 VALUE erlix_list_cons(VALUE self,VALUE head){
-  if(!IS_ETERM(head)){
-    rb_raise(rb_eTypeError,"the head must be ErlixTerm!");
+  if(!IS_ETERM(head) && !CAN_AUTO_CONV(head)){
+    rb_raise(rb_eTypeError,"the head must be ErlixTerm or Auto-Convertable-Type!");
     return Qnil;
   }
-  ErlixTerm *list,*hd;
+  ErlixTerm *list;
+  ETERM *ep;
   Data_Get_Struct(self,ErlixTerm,list);
-  Data_Get_Struct(head,ErlixTerm,hd);
-  ETERM *ep=erl_cons(hd->term,list->term);
-  return erlix_term(ep);
+  if(IS_ETERM(head)){
+    ErlixTerm *hd;
+    Data_Get_Struct(head,ErlixTerm,hd);
+    ep=erl_cons(hd->term,list->term);
+  }else{
+    ep=erl_cons(erlix_auto_conv(head),list->term);
+  }
+  VALUE ret= erlix_term(erl_copy_term(ep));
+  erl_free_term(ep);
+  return ret;
 }
 
 VALUE erlix_list_size(VALUE self){

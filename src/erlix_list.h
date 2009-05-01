@@ -18,7 +18,6 @@ VALUE erlix_list_create(int argc,VALUE *argv,VALUE klass);
 VALUE erlix_list_head(VALUE self);
 VALUE erlix_list_tail(VALUE self);
 VALUE erlix_list_cons(VALUE self,VALUE head);
-VALUE erlix_list_to_str(VALUE self);
 VALUE erlix_list_size(VALUE self);
 VALUE erlix_list_etype(VALUE self);
 

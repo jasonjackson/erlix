@@ -29,15 +29,6 @@ VALUE erlix_float_init(VALUE self,VALUE fix){
 }
 
 
-VALUE erlix_float_to_str(VALUE self){
-  ErlixTerm* efloat;
-  Data_Get_Struct(self,ErlixTerm,efloat);
-  char buf[12];
-  memset(buf,0,12);
-  sprintf(buf,"%f",ERL_FLOAT_VALUE(efloat->term));
-  return rb_str_new2(buf);
-}
-
 VALUE erlix_float_to_fix(VALUE self){
   ErlixTerm *efloat;
   Data_Get_Struct(self,ErlixTerm,efloat);
@@ -54,7 +45,6 @@ void init_erlix_float(){
 
   rb_define_alloc_func(erlix_cErlixFloat,erlix_float_alloc);
   rb_define_method(erlix_cErlixFloat,"initialize",erlix_float_init,1);
-  rb_define_method(erlix_cErlixFloat,"to_s",erlix_float_to_str,0);
   rb_define_method(erlix_cErlixFloat,"to_i",erlix_float_to_fix,0);
   rb_define_method(erlix_cErlixFloat,"etype",erlix_float_etype,0);
 

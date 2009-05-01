@@ -14,7 +14,6 @@
 
 VALUE erlix_binary_alloc(VALUE klass);
 VALUE erlix_binary_init(VALUE self,VALUE string);
-VALUE erlix_binary_to_str(VALUE self);
 VALUE erlix_binary_data(VALUE self);
 VALUE erlix_binary_size(VALUE self);
 VALUE erlix_binary_etype(VALUE self);

@@ -27,12 +27,11 @@ VALUE erlix_tuple_init(VALUE self,VALUE ary){
     return self;
   }
   int i;
-  //check: all elements' must be ErlixTerm
-  //TODO: automatic conversions
+    //check: all elements' must be ErlixTerm or auto-convertable Type
   for(i=0;i<RARRAY(array)->len;i++){
     VALUE e=RARRAY(array)->ptr[i];
     if(!IS_ETERM(e) && !CAN_AUTO_CONV(e)){
-      rb_raise(rb_eTypeError,"all tuple's elements must be ErlixTerm!");
+      rb_raise(rb_eTypeError,"all tuple's elements must be ErlixTerm or Auto-Convertable-Type!");
     }
   }
   ETERM **tes=(ETERM**)malloc(sizeof(ETERM*)*(RARRAY(array)->len));
@@ -47,9 +46,9 @@ VALUE erlix_tuple_init(VALUE self,VALUE ary){
     }
   }
   tuple->term=erl_mk_tuple(tes,RARRAY(array)->len);
-  for(i=0;i<RARRAY(array)->len;i++){
-    erl_free_term(*(tes+i));
-  }
+  //for(i=0;i<RARRAY(array)->len;i++){
+  //  erl_free_term(*(tes+i));
+  //}
   free(tes);
   return self;
 }
@@ -62,7 +61,7 @@ VALUE erlix_tuple_create(int argc,VALUE *argv,VALUE klass){
   }else if(argc>0){
     int i;
     //check: all elements' must be ErlixTerm
-    //TODO: automatic conversions
+    //or automatic conversions
     for(i=0;i<argc;i++){
       if(!IS_ETERM(argv[i]) && !CAN_AUTO_CONV(argv[i])){
         rb_raise(rb_eTypeError,"all tuple's elements must be ErlixTerm!");
@@ -79,9 +78,9 @@ VALUE erlix_tuple_create(int argc,VALUE *argv,VALUE klass){
       }
     }
     rterm=erl_mk_tuple(tes,argc);
-    for(i=0;i<argc;i++){
-      erl_free_term(*(tes+i));
-    }
+    //for(i=0;i<argc;i++){
+    //  erl_free_term(*(tes+i));
+    //}
     free(tes);
   }
   return erlix_term(rterm);
@@ -98,12 +97,9 @@ VALUE erlix_tuple_nth(VALUE self,VALUE index){
     return Qnil;
   }
   ETERM *e=erl_element(FIX2INT(index),tuple->term);
-  return erlix_term(e);
+  return erlix_term(erl_copy_term(e));
 }
 
-//TODO
-VALUE erlix_tuple_to_str(VALUE self);
-//TODO
 VALUE erlix_tuple_to_ary(VALUE self){
   ErlixTerm *tuple;
   Data_Get_Struct(self,ErlixTerm,tuple);
@@ -112,7 +108,7 @@ VALUE erlix_tuple_to_ary(VALUE self){
   int i=0;
   for(;i<len;i++){
     ETERM *e=erl_element(i+1,tuple->term);
-    rb_ary_store(ret,i,erlix_term(e));
+    rb_ary_store(ret,i,erlix_term(erl_copy_term(e)));
   }
   return ret;
 }

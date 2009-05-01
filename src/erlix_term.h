@@ -70,7 +70,7 @@ void free_erlix_term(void* p);
 
 VALUE erlix_term(ETERM *term);
 VALUE erlix_term_init_copy(VALUE copy,VALUE orig);
-VALUE erlix_term_puts(VALUE self);
+VALUE erlix_term_to_str(VALUE self);
 VALUE erlix_term_eql(VALUE left,VALUE right);
 VALUE erlix_term_match(VALUE left,VALUE string);
 VALUE erlix_term_mget(VALUE left,VALUE string,VALUE e);

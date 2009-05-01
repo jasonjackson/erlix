@@ -32,16 +32,6 @@ VALUE erlix_ref_init(VALUE self){
 }
 
 
-VALUE erlix_ref_to_str(VALUE self){
-  ErlixTerm* eref;
-  Data_Get_Struct(self,ErlixTerm,eref);
-  //char buf[64];
-  //memset(buf,0,12);
-  //sprintf(buf,"#Ref<%d.%d.%d.%d>",ERL_REF_VALUE(eref->term));
-  return rb_str_new2("#Ref<...>");
-}
-
-
 VALUE erlix_ref_etype(VALUE self){
   return rb_str_new2("ref");
 }
@@ -51,7 +41,6 @@ void init_erlix_ref(){
 
   rb_define_alloc_func(erlix_cErlixRef,erlix_ref_alloc);
   rb_define_method(erlix_cErlixRef,"initialize",erlix_ref_init,0);
-  rb_define_method(erlix_cErlixRef,"to_s",erlix_ref_to_str,0);
   rb_define_method(erlix_cErlixRef,"etype",erlix_ref_etype,0);
 
   rb_include_module(erlix_cErlixRef,erlix_mErlixTerm);

@@ -42,17 +42,6 @@ VALUE erlix_pid_init(VALUE self,VALUE econn){
 }
 
 
-VALUE erlix_pid_to_str(VALUE self){
-  ErlixTerm* pid;
-  Data_Get_Struct(self,ErlixTerm,pid);
-  char name[10];
-  ETERM *p=pid->term;
-  memset(name,0,10);
-  sprintf(name,"<%d.%d.%d>",ERL_PID_NUMBER(p),ERL_PID_SERIAL(p),ERL_PID_CREATION(p));
-  return rb_str_new2(name);
-}
-
-
 VALUE erlix_pid_etype(VALUE self){
   return rb_str_new2("pid");
 }
@@ -62,7 +51,6 @@ void init_erlix_pid(){
 
   rb_define_alloc_func(erlix_cErlixPid,erlix_pid_alloc);
   rb_define_method(erlix_cErlixPid,"initialize",erlix_pid_init,1);
-  rb_define_method(erlix_cErlixPid,"to_s",erlix_pid_to_str,0);
   rb_define_method(erlix_cErlixPid,"etype",erlix_pid_etype,0);
 
   rb_include_module(erlix_cErlixPid,erlix_mErlixTerm);

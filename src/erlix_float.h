@@ -14,7 +14,6 @@
 
 VALUE erlix_float_alloc(VALUE klass);
 VALUE erlix_float_init(VALUE self,VALUE fixnum);
-VALUE erlix_float_to_str(VALUE self);
 VALUE erlix_float_to_fix(VALUE self);
 VALUE erlix_float_size(VALUE self);
 VALUE erlix_float_etype(VALUE self);

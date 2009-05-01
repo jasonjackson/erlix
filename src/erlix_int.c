@@ -29,15 +29,6 @@ VALUE erlix_int_init(VALUE self,VALUE fix){
 }
 
 
-VALUE erlix_int_to_str(VALUE self){
-  ErlixTerm* eint;
-  Data_Get_Struct(self,ErlixTerm,eint);
-  char buf[12];
-  memset(buf,0,12);
-  sprintf(buf,"%d",ERL_INT_VALUE(eint->term));
-  return rb_str_new2(buf);
-}
-
 VALUE erlix_int_to_fix(VALUE self){
   ErlixTerm *eint;
   Data_Get_Struct(self,ErlixTerm,eint);
@@ -54,7 +45,6 @@ void init_erlix_int(){
 
   rb_define_alloc_func(erlix_cErlixInt,erlix_int_alloc);
   rb_define_method(erlix_cErlixInt,"initialize",erlix_int_init,1);
-  rb_define_method(erlix_cErlixInt,"to_s",erlix_int_to_str,0);
   rb_define_method(erlix_cErlixInt,"to_i",erlix_int_to_fix,0);
   rb_define_method(erlix_cErlixInt,"etype",erlix_int_etype,0);
 

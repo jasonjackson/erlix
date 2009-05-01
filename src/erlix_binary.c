@@ -26,10 +26,6 @@ VALUE erlix_binary_init(VALUE self,VALUE string){
 }
 
 
-VALUE erlix_binary_to_str(VALUE self){
-  return rb_str_new2("#Binary<<...>>");
-}
-
 VALUE erlix_binary_data(VALUE self){
   ErlixTerm* binary;
   Data_Get_Struct(self,ErlixTerm,binary);
@@ -52,7 +48,6 @@ void init_erlix_binary(){
 
   rb_define_alloc_func(erlix_cErlixBinary,erlix_binary_alloc);
   rb_define_method(erlix_cErlixBinary,"initialize",erlix_binary_init,1);
-  rb_define_method(erlix_cErlixBinary,"to_s",erlix_binary_to_str,0);
   rb_define_method(erlix_cErlixBinary,"data",erlix_binary_data,0);
   rb_define_method(erlix_cErlixBinary,"size",erlix_binary_size,0);
   rb_define_method(erlix_cErlixBinary,"etype",erlix_binary_etype,0);

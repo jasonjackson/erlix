@@ -14,7 +14,6 @@
 
 VALUE erlix_pid_alloc(VALUE klass);
 VALUE erlix_pid_init(VALUE self,VALUE econn);
-VALUE erlix_pid_to_str(VALUE self);
 VALUE erlix_pid_size(VALUE self);
 VALUE erlix_pid_etype(VALUE self);
 
