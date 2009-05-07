@@ -25,6 +25,7 @@ void free_erlix_term(void* ptr){
   //flags
   //erl_free_term(eterm->term);
   erl_free_compound(eterm->term);
+  free(eterm);
 }
 
 //initialize_copy
