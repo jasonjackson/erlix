@@ -37,7 +37,7 @@ t=Thread.start("thread recv"){ |name|
     puts "+++++"
     m=c.erecv
     puts m.mtype
-    m.message.puts
+    puts m.message
     puts m.class
     puts m.from
     puts m.to
