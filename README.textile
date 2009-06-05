@@ -106,7 +106,7 @@ irb(main):017:0> list2=list.cons(b)
 => [#Bin,atom1,101,{atom1,17.000000,#Bin,atom2,101}]
 </code></pre>
 
-<a name="fn1">Some Ruby-Type var can be auto-convert to particular Erlang-Type:</a>
+<a name="fn1">Some Ruby-Type var can be auto-converted to particular Erlang-Type:</a>
 
 |Ruby-Type | -> | Erlang-Type |
 |FixNum    | -> | ErlixInt    |
@@ -226,7 +226,7 @@ puts "send ok"
 puts "receiving"
 t=Thread.new{
   while true do
-    #in erlix-v0.2,erecv make this thread block,v0.3 fixed this
+    #in erlix-v0.2,erecv make all threads blocked,v0.3 fixed this
     m=c.erecv
     puts m.mtype
     puts m.message
