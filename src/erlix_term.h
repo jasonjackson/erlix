@@ -12,6 +12,10 @@
 #include "erl_interface.h"
 #include "ei.h"
 
+#ifndef RUBY_VERSION_MINOR
+#define RUBY_VERSION_MINOR 8
+#endif
+
 /*********** erlix_term  ***********/
 
 #define TYPE_ATOM        (1<<0)  //DONE

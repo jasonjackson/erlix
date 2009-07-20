@@ -7,6 +7,10 @@
 #include <stdlib.h>
 
 #include "erlix_term.h"
+#include "erlix_int.h"
+#include "erlix_uint.h"
+#include "erlix_float.h"
+#include "erlix_binary.h"
 #include "erlix_pid.h"
 #include "erlix_atom.h"
 #include "erlix_list.h"
@@ -254,7 +258,7 @@ VALUE erlix_term_mget(VALUE self,VALUE string,VALUE e){
     ret=Qnil;
   }
   erl_free_term(epattern);
-  return ret;;
+  return ret;
 }
 
 ETERM *erlix_auto_conv(VALUE v){
@@ -290,19 +294,19 @@ VALUE erlix_term(ETERM *term){
   unsigned long type=erlix_term_type(term);
   VALUE ret;
   if(type==TYPE_INT){
-    ret=erlix_pid_alloc(erlix_cErlixInt);
+    ret=erlix_int_alloc(erlix_cErlixInt);
     ErlixTerm *eterm;
     Data_Get_Struct(ret,ErlixTerm,eterm);
     eterm->term=term;
     return ret;
   }else if(type==TYPE_UINT){
-    ret=erlix_pid_alloc(erlix_cErlixUInt);
+    ret=erlix_uint_alloc(erlix_cErlixUInt);
     ErlixTerm *eterm;
     Data_Get_Struct(ret,ErlixTerm,eterm);
     eterm->term=term;
     return ret;
   }else if(type==TYPE_FLOAT){
-    ret=erlix_pid_alloc(erlix_cErlixFloat);
+    ret=erlix_float_alloc(erlix_cErlixFloat);
     ErlixTerm *eterm;
     Data_Get_Struct(ret,ErlixTerm,eterm);
     eterm->term=term;
@@ -314,7 +318,7 @@ VALUE erlix_term(ETERM *term){
     eterm->term=term;
     return ret;
   }else if(type==TYPE_REF){
-    ret=erlix_pid_alloc(erlix_cErlixRef);
+    ret=erlix_ref_alloc(erlix_cErlixRef);
     ErlixTerm *eterm;
     Data_Get_Struct(ret,ErlixTerm,eterm);
     eterm->term=term;
@@ -338,7 +342,7 @@ VALUE erlix_term(ETERM *term){
     eterm->term=term;
     return ret;
   }else if(type==TYPE_BINARY){
-    ret=erlix_tuple_alloc(erlix_cErlixBinary);
+    ret=erlix_binary_alloc(erlix_cErlixBinary);
     ErlixTerm *eterm;
     Data_Get_Struct(ret,ErlixTerm,eterm);
     eterm->term=term;
