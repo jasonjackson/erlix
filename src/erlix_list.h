@@ -19,6 +19,7 @@ VALUE erlix_list_head(VALUE self);
 VALUE erlix_list_tail(VALUE self);
 VALUE erlix_list_cons(VALUE self,VALUE head);
 VALUE erlix_list_size(VALUE self);
+VALUE erlix_list_inspect(VALUE self);
 VALUE erlix_list_etype(VALUE self);
 
 void init_erlix_list();

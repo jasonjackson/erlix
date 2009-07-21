@@ -16,6 +16,7 @@ VALUE erlix_atom_alloc(VALUE klass);
 VALUE erlix_atom_init(VALUE self,VALUE string);
 VALUE erlix_atom_size(VALUE self);
 VALUE erlix_atom_etype(VALUE self);
+VALUE erlix_atom_inspect(VALUE self);
 
 void init_erlix_atom();
 

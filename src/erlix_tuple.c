@@ -121,6 +121,14 @@ VALUE erlix_tuple_size(VALUE self){
   return INT2FIX(len);
 }
 
+VALUE erlix_tuple_inspect(VALUE self){
+  VALUE ret=rb_str_new2("#<ErlixTuple:");
+  ID concat=rb_intern("concat");
+  rb_funcall(ret,concat,1,rb_funcall(self,rb_intern("to_s"),0));
+  rb_funcall(ret,concat,1,rb_str_new2(">"));
+  return ret;
+}
+
 VALUE erlix_tuple_etype(VALUE self){
   return rb_str_new2("tuple");
 }
@@ -134,6 +142,7 @@ void init_erlix_tuple(){
   rb_define_method(erlix_cErlixTuple,"[]",erlix_tuple_nth,1);
   rb_define_method(erlix_cErlixTuple,"to_a",erlix_tuple_to_ary,0);
   rb_define_method(erlix_cErlixTuple,"size",erlix_tuple_size,0);
+  rb_define_method(erlix_cErlixTuple,"inspect",erlix_tuple_inspect,0);
   rb_define_method(erlix_cErlixTuple,"etype",erlix_tuple_etype,0);
 
   rb_define_singleton_method(erlix_cErlixTuple, "[]", erlix_tuple_create, -1);

@@ -39,6 +39,14 @@ VALUE erlix_binary_size(VALUE self){
   return INT2FIX(l);
 }
 
+VALUE erlix_binary_inspect(VALUE self){
+  VALUE ret=rb_str_new2("#<ErlixBinary:");
+  ID concat=rb_intern("concat");
+  rb_funcall(ret,concat,1,rb_funcall(self,rb_intern("to_s"),0));
+  rb_funcall(ret,concat,1,rb_str_new2(">"));
+  return ret;
+}
+
 VALUE erlix_binary_etype(VALUE self){
   return rb_str_new2("binary");
 }
@@ -50,6 +58,7 @@ void init_erlix_binary(){
   rb_define_method(erlix_cErlixBinary,"initialize",erlix_binary_init,1);
   rb_define_method(erlix_cErlixBinary,"data",erlix_binary_data,0);
   rb_define_method(erlix_cErlixBinary,"size",erlix_binary_size,0);
+  rb_define_method(erlix_cErlixBinary,"inspect",erlix_binary_inspect,0);
   rb_define_method(erlix_cErlixBinary,"etype",erlix_binary_etype,0);
 
   rb_include_module(erlix_cErlixBinary,erlix_mErlixTerm);

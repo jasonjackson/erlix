@@ -18,6 +18,7 @@ VALUE erlix_tuple_create(int argc,VALUE *argv,VALUE klass);
 VALUE erlix_tuple_nth(VALUE self,VALUE index);
 VALUE erlix_tuple_to_ary(VALUE self);
 VALUE erlix_tuple_size(VALUE self);
+VALUE erlix_tuple_inspect(VALUE self);
 VALUE erlix_tuple_etype(VALUE self);
 
 

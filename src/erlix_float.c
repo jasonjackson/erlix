@@ -36,6 +36,14 @@ VALUE erlix_float_to_fix(VALUE self){
   return rb_float_new(l);
 }
 
+VALUE erlix_float_inspect(VALUE self){
+  VALUE ret=rb_str_new2("#<ErlixFloat:");
+  ID concat=rb_intern("concat");
+  rb_funcall(ret,concat,1,rb_funcall(self,rb_intern("to_s"),0));
+  rb_funcall(ret,concat,1,rb_str_new2(">"));
+  return ret;
+}
+
 VALUE erlix_float_etype(VALUE self){
   return rb_str_new2("float");
 }
@@ -46,6 +54,7 @@ void init_erlix_float(){
   rb_define_alloc_func(erlix_cErlixFloat,erlix_float_alloc);
   rb_define_method(erlix_cErlixFloat,"initialize",erlix_float_init,1);
   rb_define_method(erlix_cErlixFloat,"to_i",erlix_float_to_fix,0);
+  rb_define_method(erlix_cErlixFloat,"inspect",erlix_float_inspect,0);
   rb_define_method(erlix_cErlixFloat,"etype",erlix_float_etype,0);
 
   rb_include_module(erlix_cErlixFloat,erlix_mErlixTerm);

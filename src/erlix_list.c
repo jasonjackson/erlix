@@ -161,6 +161,14 @@ VALUE erlix_list_size(VALUE self){
   return INT2FIX(len);
 }
 
+VALUE erlix_list_inspect(VALUE self){
+  VALUE ret=rb_str_new2("#<ErlixList:");
+  ID concat=rb_intern("concat");
+  rb_funcall(ret,concat,1,rb_funcall(self,rb_intern("to_s"),0));
+  rb_funcall(ret,concat,1,rb_str_new2(">"));
+  return ret;
+}
+
 VALUE erlix_list_etype(VALUE self){
   return rb_str_new2("list");
 }
@@ -175,6 +183,7 @@ void init_erlix_list(){
   rb_define_method(erlix_cErlixList,"cons",erlix_list_cons,1);
   rb_define_method(erlix_cErlixList,"to_a",erlix_list_to_ary,0);
   rb_define_method(erlix_cErlixList,"size",erlix_list_size,0);
+  rb_define_method(erlix_cErlixList,"inspect",erlix_list_inspect,0);
   rb_define_method(erlix_cErlixList,"etype",erlix_list_etype,0);
 
   rb_define_singleton_method(erlix_cErlixList,"[]",erlix_list_create,-1);

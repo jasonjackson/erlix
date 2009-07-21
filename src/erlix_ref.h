@@ -14,6 +14,7 @@
 
 VALUE erlix_REF_alloc(VALUE klass);
 VALUE erlix_REF_init(VALUE self);
+VALUE erlix_ref_inspect(VALUE self);
 VALUE erlix_REF_etype(VALUE self);
 
 void init_erlix_REF();

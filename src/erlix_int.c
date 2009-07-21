@@ -36,6 +36,14 @@ VALUE erlix_int_to_fix(VALUE self){
   return INT2FIX(l);
 }
 
+VALUE erlix_int_inspect(VALUE self){
+  VALUE ret=rb_str_new2("#<ErlixInt:");
+  ID concat=rb_intern("concat");
+  rb_funcall(ret,concat,1,rb_funcall(self,rb_intern("to_s"),0));
+  rb_funcall(ret,concat,1,rb_str_new2(">"));
+  return ret;
+}
+
 VALUE erlix_int_etype(VALUE self){
   return rb_str_new2("int");
 }
@@ -46,6 +54,7 @@ void init_erlix_int(){
   rb_define_alloc_func(erlix_cErlixInt,erlix_int_alloc);
   rb_define_method(erlix_cErlixInt,"initialize",erlix_int_init,1);
   rb_define_method(erlix_cErlixInt,"to_i",erlix_int_to_fix,0);
+  rb_define_method(erlix_cErlixInt,"inspect",erlix_int_inspect,0);
   rb_define_method(erlix_cErlixInt,"etype",erlix_int_etype,0);
 
   rb_include_module(erlix_cErlixInt,erlix_mErlixTerm);

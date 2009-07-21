@@ -41,6 +41,13 @@ VALUE erlix_pid_init(VALUE self,VALUE econn){
   return self;
 }
 
+VALUE erlix_pid_inspect(VALUE self){
+  VALUE ret=rb_str_new2("#<ErlixPid:");
+  ID concat=rb_intern("concat");
+  rb_funcall(ret,concat,1,rb_funcall(self,rb_intern("to_s"),0));
+  rb_funcall(ret,concat,1,rb_str_new2(">"));
+  return ret;
+}
 
 VALUE erlix_pid_etype(VALUE self){
   return rb_str_new2("pid");
@@ -51,6 +58,7 @@ void init_erlix_pid(){
 
   rb_define_alloc_func(erlix_cErlixPid,erlix_pid_alloc);
   rb_define_method(erlix_cErlixPid,"initialize",erlix_pid_init,1);
+  rb_define_method(erlix_cErlixPid,"inspect",erlix_pid_inspect,0);
   rb_define_method(erlix_cErlixPid,"etype",erlix_pid_etype,0);
 
   rb_include_module(erlix_cErlixPid,erlix_mErlixTerm);

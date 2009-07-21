@@ -15,6 +15,7 @@
 VALUE erlix_pid_alloc(VALUE klass);
 VALUE erlix_pid_init(VALUE self,VALUE econn);
 VALUE erlix_pid_size(VALUE self);
+VALUE erlix_pid_inspect(VALUE self);
 VALUE erlix_pid_etype(VALUE self);
 
 void init_erlix_pid();
